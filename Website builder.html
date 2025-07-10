@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Web Builder</title>
+  <style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+    body, html { font-family: 'Segoe UI', sans-serif; background: #f7f8fa; }
+
+    nav {
+      background: #fff;
+      display: flex;
+      align-items: center;
+      padding: 1rem 2rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #0078f0;
+      flex: 1;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+    .logo:hover { color: #005bb5; }
+
+    .center-button button,
+    .right-button button,
+    .save-btn,
+    .dont-btn {
+      background: #00b4d8;
+      color: white;
+      border: none;
+      padding: 0.6rem 1rem;
+      margin: 0 0.5rem;
+      border-radius: 25px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.3s;
+    }
+    .center-button button:hover,
+    .right-button button:hover,
+    .save-btn:hover,
+    .dont-btn:hover {
+      background: #008bb0;
+    }
+    .save-btn:disabled { background: #999; cursor: not-allowed; }
+
+    .history-dropdown { position: relative; }
+    .history-list {
+      display: none;
+      position: absolute;
+      top: 2.6rem;
+      right: 0;
+      background: white;
+      border: 1px solid #ddd;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      max-height: 200px;
+      overflow-y: auto;
+      border-radius: 5px;
+      z-index: 100;
+      min-width: 250px;
+    }
+    .history-list div {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.5rem 1rem;
+    }
+    .history-list div:hover { background: #f0f0f0; }
+    .remove-btn {
+      background: transparent;
+      border: none;
+      color: #f00;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .fancy-box {
+      background-color: #ffffff;
+      border: 2px solid #e0e0e0;
+      border-radius: 12px;
+      padding: 20px;
+      max-width: 400px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      margin: 20px auto;
+      text-align: center;
+    }
+
+    .fancy-box:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+    }
+
+    .input-panel {
+      position: fixed;
+      top: 5.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 320px;
+      background: white;
+      border: 1px solid #ddd;
+      padding: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      display: none;
+      z-index: 999;
+    }
+
+    .input-panel label {
+      display: block;
+      margin: 0.5rem 0 0.2rem;
+      font-weight: 600;
+    }
+
+    .input-panel select {
+      width: 100%;
+      padding: 0.5rem;
+      margin-bottom: 0.5rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    .input-panel button {
+      background: #00b4d8;
+      color: white;
+      border: none;
+      padding: 0.6rem 1rem;
+      border-radius: 25px;
+      cursor: pointer;
+      font-weight: 600;
+      width: 100%;
+      margin: 0.5rem 0;
+    }
+
+    .dropdown-code {
+      display: none;
+      background: #2e3440;
+      color: #d8dee9;
+      padding: 1rem;
+      font-family: monospace;
+      white-space: pre-wrap;
+      overflow-y: auto;
+      max-height: 400px;
+      margin: 1rem 2rem 2rem;
+      border-radius: 8px;
+    }
+
+    #siteContent {
+      padding: 2rem;
+      background: #fff;
+      margin: 1rem auto;
+      width: 90%;
+      max-width: 1000px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      min-height: 400px;
+    }
+
+    .site-header {
+      background: linear-gradient(120deg, #0078f0, #00b4d8);
+      color: white;
+      padding: 4rem 2rem;
+      text-align: center;
+      margin-bottom: 2rem;
+      border-radius: 8px;
+    }
+
+    .site-section {
+      padding: 3rem 2rem;
+      margin-bottom: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      background: white;
+    }
+
+    .section-title {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      color: #0078f0;
+      text-align: center;
+    }
+
+    .features-grid,
+    .gallery-grid,
+    .store-items,
+    .blog-list {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      padding: 20px 0;
+    }
+
+    .feature-card,
+    .blog-post,
+    .store-item {
+      background: #fff;
+      border-radius: 12px;
+      padding: 20px;
+      width: 250px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+      text-align: center;
+      border: 1px solid #e0e0e0;
+    }
+
+    .feature-card:hover,
+    .store-item:hover,
+    .blog-post:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .gallery-grid img {
+      width: 200px;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 12px;
+      transition: transform 0.3s ease;
+    }
+
+    .gallery-grid img:hover {
+      transform: scale(1.05);
+    }
+
+    .contact-form {
+      max-width: 500px;
+      margin: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .contact-form input,
+    .contact-form textarea {
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+    }
+
+    .contact-form button {
+      padding: 12px;
+      background-color: #4caf50;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+
+    .site-footer {
+      text-align: center;
+      margin-top: 40px;
+      padding: 20px;
+      background-color: #333;
+      color: white;
+      border-radius: 8px;
+    }
+
+    @media (max-width: 768px) {
+      .input-panel {
+        width: 90%;
+        left: 5%;
+        transform: none;
+      }
+      nav {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+      }
+      .center-button, .right-button {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="logo" onclick="window.scrollTo({ top: 0, behavior: 'smooth' })">WebBuilder</div>
+    <div class="center-button">
+      <button onclick="togglePanel(true)">Options 🔽</button>
+    </div>
+    <div class="save-btn" onclick="saveCurrent()">Save</div>
+    <div class="dont-btn" onclick="dontSave()">Don't Save</div>
+    <div class="right-button history-dropdown">
+      <button onclick="toggleHistory()">History 🕰️</button>
+      <div class="history-list" id="historyList"></div>
+    </div>
+    <div class="right-button">
+      <button onclick="toggleCode()">Get Code 💻</button>
+    </div>
+  </nav>
+
+  <div class="input-panel" id="inputPanel">
+    <button onclick="togglePanel(false)">Close ❌</button>
+    <h3>Select Options</h3>
+    <label>Site Type:</label>
+    <select id="siteType">
+      <option value="">-- Choose Type --</option>
+      <option value="portfolio">Portfolio</option>
+      <option value="blog">Blog</option>
+      <option value="business">Business</option>
+      <option value="store">Online Store</option>
+      <option value="personal">Personal Site</option>
+    </select>
+
+    <label>Sections (Ctrl/Cmd to multi-select):</label>
+    <select id="siteSections" multiple size="5">
+      <option value="features">Features</option>
+      <option value="blog">Blog</option>
+      <option value="gallery">Gallery</option>
+      <option value="store">Store</option>
+      <option value="contact">Contact</option>
+    </select>
+
+    <button onclick="generateSite()">Generate Site 🚀</button>
+  </div>
+
+  <div id="siteContent">
+    <p style="padding:2rem;">Your stylish site will appear here!</p>
+  </div>
+
+  <div class="dropdown-code" id="codeBox"></div>
+
+  <script>
+    const inputPanel = document.getElementById("inputPanel");
+    const codeBox = document.getElementById("codeBox");
+    const historyList = document.getElementById("historyList");
+    const saveBtn = document.querySelector('.save-btn');
+    const dontBtn = document.querySelector('.dont-btn');
+
+    function togglePanel(open) {
+      inputPanel.style.display = open ? 'block' : 'none';
+    }
+
+    function toggleCode() {
+      codeBox.style.display = codeBox.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function toggleHistory() {
+      historyList.style.display = historyList.style.display === 'block' ? 'none' : 'block';
+      rebuildHistory();
+    }
+
+    function loadHistory() {
+      return JSON.parse(localStorage.getItem('siteHistory') || '[]');
+    }
+
+    function saveHistory(hist) {
+      localStorage.setItem('siteHistory', JSON.stringify(hist));
+    }
+
+    function updateButtons() {
+      const hist = loadHistory();
+      if (hist.length >= 10) {
+        saveBtn.disabled = true;
+        dontBtn.textContent = "DON’T SAVED!";
+      } else {
+        saveBtn.disabled = false;
+        dontBtn.textContent = "Don't Save";
+      }
+    }
+
+    function rebuildHistory() {
+      const hist = loadHistory();
+      historyList.innerHTML = hist.map((e, i) => `
+        <div>
+          <span onclick="loadFromHistory(${i})">${e.title} (${e.sections.join(', ')})</span>
+          <button class="remove-btn" onclick="removeHistory(${i})">✖</button>
+        </div>
+      `).join('');
+      updateButtons();
+    }
+
+    function removeHistory(idx) {
+      const hist = loadHistory();
+      hist.splice(idx, 1);
+      saveHistory(hist);
+      rebuildHistory();
+    }
+
+    function loadFromHistory(idx) {
+      const hist = loadHistory();
+      const e = hist[idx];
+      document.getElementById('siteType').value = e.siteType;
+      Array.from(document.getElementById('siteSections').options).forEach(o => o.selected = e.sections.includes(o.value));
+      generateSite();
+      toggleHistory();
+    }
+
+    function saveCurrent() {
+      const siteType = document.getElementById("siteType").value;
+      const sections = Array.from(document.getElementById("siteSections").selectedOptions).map(o => o.value);
+      if (!siteType || sections.length === 0) return alert("Nothing to save!");
+      const hist = loadHistory();
+      hist.push({ siteType, sections, title: siteType.charAt(0).toUpperCase()+siteType.slice(1) });
+      saveHistory(hist);
+      rebuildHistory();
+    }
+
+    function dontSave() {
+      document.getElementById("siteContent").innerHTML = "";
+      codeBox.style.display = 'none';
+    }
+
+    function generateSite() {
+      const siteType = document.getElementById("siteType").value;
+      const sections = Array.from(document.getElementById("siteSections").selectedOptions).map(o => o.value);
+      if (!siteType) return alert("Select a site type!");
+      if (sections.length === 0) return alert("Choose at least one section!");
+
+      const siteName = siteType.charAt(0).toUpperCase() + siteType.slice(1);
+      let content = `<header><h1>Welcome to ${siteName}</h1><p>Your awesome ${siteType} site, freshly generated 🎉</p></header>`;
+
+      if (sections.includes("features")) {
+        content += `
+          <div class="site-section">
+            <h2 class="section-title">✨ Features</h2>
+            <div class="features-grid">
+              <div class="feature-card">
+                <h3>🚀 Fast & Modern</h3>
+                <p>Built with the latest technologies for optimal performance.</p>
+              </div>
+              <div class="feature-card">
+                <h3>📱 Responsive Design</h3>
+                <p>Looks great on all devices, from mobile to desktop.</p>
+              </div>
+              <div class="feature-card">
+                <h3>🎨 Beautiful UI</h3>
+                <p>Clean, modern design that engages your visitors.</p>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      if (sections.includes("blog")) {
+        content += `
+          <div class="site-section">
+            <h2 class="section-title">📝 Blog</h2>
+            <div class="blog-list">
+              <div class="blog-post">
+                <h3>Getting Started</h3>
+                <p><small>Published on ${new Date().toLocaleDateString()}</small></p>
+                <p>Welcome to our blog! Here we share insights, tips, and updates about our journey.</p>
+              </div>
+              <div class="blog-post">
+                <h3>Latest Updates</h3>
+                <p><small>Published on ${new Date().toLocaleDateString()}</small></p>
+                <p>Check out the latest features and improvements we've made to enhance your experience.</p>
+              </div>
+              <div class="blog-post">
+                <h3>Tips & Tricks</h3>
+                <p><small>Published on ${new Date().toLocaleDateString()}</small></p>
+                <p>Learn how to make the most of our platform with these helpful tips and tricks.</p>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      if (sections.includes("gallery")) {
+        content += `
+          <div class="site-section">
+            <h2 class="section-title">📸 Gallery</h2>
+            <div class="gallery-grid">
+              <img src="https://picsum.photos/200/200?random=1" alt="Gallery Image 1">
+              <img src="https://picsum.photos/200/200?random=2" alt="Gallery Image 2">
+              <img src="https://picsum.photos/200/200?random=3" alt="Gallery Image 3">
+              <img src="https://picsum.photos/200/200?random=4" alt="Gallery Image 4">
+              <img src="https://picsum.photos/200/200?random=5" alt="Gallery Image 5">
+              <img src="https://picsum.photos/200/200?random=6" alt="Gallery Image 6">
+            </div>
+          </div>
+        `;
+      }
+
+      if (sections.includes("store")) {
+        content += `
+          <div class="site-section">
+            <h2 class="section-title">🛍️ Store</h2>
+            <div class="store-items">
+              <div class="store-item">
+                <h3>Premium Product</h3>
+                <p><strong>$99.99</strong></p>
+                <p>High-quality product with excellent features and great value.</p>
+                <button style="background: #4caf50; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">Add to Cart</button>
+              </div>
+              <div class="store-item">
+                <h3>Popular Item</h3>
+                <p><strong>$49.99</strong></p>
+                <p>Our most popular product loved by customers worldwide.</p>
+                <button style="background: #4caf50; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">Add to Cart</button>
+              </div>
+              <div class="store-item">
+                <h3>Best Seller</h3>
+                <p><strong>$79.99</strong></p>
+                <p>Top-rated product with amazing reviews and features.</p>
+                <button style="background: #4caf50; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">Add to Cart</button>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      if (sections.includes("contact")) {
+        content += `
+          <div class="site-section">
+            <h2 class="section-title">📬 Contact</h2>
+            <form class="contact-form" onsubmit="event.preventDefault(); alert('Message sent! Thank you for contacting us.');">
+              <input type="text" placeholder="Your Name" required>
+              <input type="email" placeholder="Your Email" required>
+              <textarea placeholder="Your Message..." rows="5" required></textarea>
+              <button type="submit">Send Message</button>
+            </form>
+          </div>
+        `;
+      }
+      content += `<footer>&copy; ${new Date().getFullYear()} ${siteName} — All rights reserved.</footer>`;
+
+      document.getElementById("siteContent").innerHTML = content;
+      codeBox.textContent = content;
+      togglePanel(false);
+      updateButtons();
+    }
+
+    // Initialize on load
+    rebuildHistory();
+  </script>
+
+</body>
+</html>
