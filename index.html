@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <link rel="icon" type="image/png" href="logo.png">
+  <link rel="icon" type="image/png" href="logo.png">
   <title>Web Builder</title>
   <style>
     /* Reset */
@@ -216,12 +216,6 @@
   <nav>
     <div class="logo" onclick="window.scrollTo({ top: 0, behavior: 'smooth' })">WebBuilder</div>
     <button class="btn" onclick="togglePanel(true)">Options 🔽</button>
-    <button class="btn" onclick="saveCurrent()">Save</button>
-    <button class="btn btn-danger" onclick="dontSave()">Don't Save</button>
-    <div class="history-dropdown">
-      <button class="btn" onclick="toggleHistory()">History 🕰️</button>
-      <div class="history-list" id="historyList"></div>
-    </div>
     <button class="btn" onclick="toggleCode()">Get Code 💻</button>
   </nav>
 
@@ -237,7 +231,7 @@
       <option value="store">Online Store</option>
       <option value="personal">Personal Site</option>
     </select>
-    <label>Sections:</label>
+    <label>Sections:  (Press CTRL to select Multiple Section)</label>
     <select id="siteSections" multiple size="5">
       <option value="features">Features</option>
       <option value="blog">Blog</option>
@@ -257,68 +251,14 @@
   <script>
     const inputPanel = document.getElementById("inputPanel");
     const codeBox = document.getElementById("codeBox");
-    const historyList = document.getElementById("historyList");
-    const saveBtn = document.querySelector('.btn[onclick="saveCurrent()"]');
-    const dontBtn = document.querySelector('.btn[onclick="dontSave()"]');
+   
 
     function togglePanel(open) { inputPanel.style.display = open ? 'block' : 'none'; }
     function toggleCode() { codeBox.style.display = codeBox.style.display === 'block' ? 'none' : 'block'; }
-    function toggleHistory() {
-      historyList.style.display = historyList.style.display === 'block' ? 'none' : 'block';
-      rebuildHistory();
-    }
+   
+    
 
-    function loadHistory() { return JSON.parse(localStorage.getItem('siteHistory') || '[]'); }
-    function saveHistory(hist) { localStorage.setItem('siteHistory', JSON.stringify(hist)); }
-
-    function updateButtons() {
-      const hist = loadHistory();
-      saveBtn.disabled = hist.length >= 10;
-      dontBtn.textContent = hist.length >= 10 ? "DON’T SAVED!" : "Don't Save";
-    }
-
-    function rebuildHistory() {
-      const hist = loadHistory();
-      historyList.innerHTML = hist.map((e, i) => `
-        <div>
-          <span onclick="loadFromHistory(${i})">${e.title} (${e.sections.join(', ')})</span>
-          <button class="remove-btn" onclick="removeHistory(${i})">✖</button>
-        </div>
-      `).join('');
-      updateButtons();
-    }
-
-    function removeHistory(idx) {
-      const hist = loadHistory();
-      hist.splice(idx, 1);
-      saveHistory(hist);
-      rebuildHistory();
-    }
-
-    function loadFromHistory(idx) {
-      const hist = loadHistory();
-      const e = hist[idx];
-      document.getElementById('siteType').value = e.siteType;
-      Array.from(document.getElementById('siteSections').options)
-        .forEach(o => o.selected = e.sections.includes(o.value));
-      generateSite();
-      toggleHistory();
-    }
-
-    function saveCurrent() {
-      const siteType = document.getElementById("siteType").value;
-      const sections = Array.from(document.getElementById("siteSections").selectedOptions).map(o => o.value);
-      if (!siteType || sections.length === 0) return alert("Nothing to save!");
-      const hist = loadHistory();
-      hist.push({ siteType, sections, title: siteType.charAt(0).toUpperCase()+siteType.slice(1) });
-      saveHistory(hist);
-      rebuildHistory();
-    }
-
-    function dontSave() {
-      document.getElementById("siteContent").innerHTML = "";
-      codeBox.style.display = 'none';
-    }
+    
 
     function generateSite() {
       const siteType = document.getElementById("siteType").value;
