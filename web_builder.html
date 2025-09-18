@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="icon" type="image/png" href="logo.png">
+  <title>Web Builder</title>
+  <style>
+    /* Reset */
+ /* Dark Theme Base */
+body, html {
+  font-family: 'Segoe UI', sans-serif;
+  background: #0f172a;
+  color: #f8fafc;
+}
+
+/* Navbar */
+nav {
+  background: #1e293b;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 2rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+}
+.logo {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #38bdf8;
+  flex: 1;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.logo:hover { color: #0ea5e9; }
+
+/* Buttons */
+.btn {
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.3s, transform 0.2s;
+}
+.btn:hover { background: #1d4ed8; transform: translateY(-2px); }
+.btn-danger { background: #ef4444; }
+.btn-success { background: #2563eb; }
+
+/* Input Panel */
+.input-panel { position: fixed; top: 5.5rem; left: 50%; transform: translateX(-50%); width: 320px; background: white; border: 1px solid #ddd; padding: 1rem; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); display: none; z-index: 999; } .input-panel h3 { margin-bottom: 0.5rem; } .input-panel label { display: block; margin: 0.5rem 0 0.2rem; font-weight: 600; } .input-panel select, .input-panel button { width: 100%; padding: 0.5rem; margin-bottom: 0.5rem; border-radius: 4px; border: 1px solid #ccc; }
+
+/* Generated Site */
+#siteContent {
+  padding: 2rem;
+  background: #1e293b;
+  margin: 1rem auto;
+  width: 90%;
+  max-width: 1000px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+}
+.site-section {
+  background: #1e293b;
+  color: #f8fafc;
+  border: 1px solid #334155;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+}
+.section-title {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  color: #38bdf8;
+  text-align: center;
+}
+
+/* Cards */
+.card {
+  background: #0f172a;
+  border: 1px solid #334155;
+  color: #f8fafc;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+  transition: transform 0.3s;
+}
+.card:hover { transform: translateY(-5px) scale(1.02); }
+
+/* Code Box */
+
+
+/* Footer */
+footer {
+  text-align: center;
+  margin-top: 40px;
+  padding: 20px;
+  background-color: #1e293b;
+  color: #94a3b8;
+  border-radius: 8px;
+}
+
+
+    /* Code block */
+    .dropdown-code {
+      display: none;
+      background: #2e3440;
+      color: #d8dee9;
+      padding: 1rem;
+      font-family: monospace;
+      white-space: pre-wrap;
+      overflow-y: auto;
+      max-height: 400px;
+      margin: 1rem 2rem 2rem;
+      border-radius: 8px;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      nav { flex-direction: column; align-items: flex-start; }
+      .input-panel { width: 90%; left: 5%; transform: none; }
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="logo" onclick="window.scrollTo({ top: 0, behavior: 'smooth' })">WebBuilder</div>
+    <button class="btn" onclick="togglePanel(true)">Options 🔽</button>
+    <button class="btn" onclick="toggleCode()">Get Code 💻</button>
+  </nav>
+
+  <div class="input-panel" id="inputPanel">
+    <button class="btn btn-danger" onclick="togglePanel(false)">Close ❌</button>
+    <h3 style="color: black;" >Select Options</h3>
+    <label style="color: black;" >Site Type:</label>
+    <select id="siteType">
+      <option value="">-- Choose Type --</option>
+      <option value="portfolio">Portfolio</option>
+      <option value="blog">Blog</option>
+      <option value="business">Business</option>
+      <option value="store">Online Store</option>
+      <option value="personal">Personal Site</option>
+    </select>
+    <label style="color: black;" >Sections:  (Press CTRL to select Multiple Section)</label>
+    <select id="siteSections" multiple size="5">
+      <option value="features">Features</option>
+      <option value="blog">Blog</option>
+      <option value="gallery">Gallery</option>
+      <option value="store">Store</option>
+      <option value="contact">Contact</option>
+    </select>
+    <button class="btn btn-success" onclick="generateSite()">Generate Site 🚀</button>
+  </div>
+
+  <main id="siteContent">
+    <p style="padding:2rem;">Your stylish site will appear here!</p>
+  </main>
+
+  <div class="dropdown-code" id="codeBox"></div>
+
+  <script>
+    const inputPanel = document.getElementById("inputPanel");
+    const codeBox = document.getElementById("codeBox");
+   
+
+    function togglePanel(open) { inputPanel.style.display = open ? 'block' : 'none'; }
+    function toggleCode() { codeBox.style.display = codeBox.style.display === 'block' ? 'none' : 'block'; }
+   
+    
+
+    
+
+    function generateSite() {
+      const siteType = document.getElementById("siteType").value;
+      const sections = Array.from(document.getElementById("siteSections").selectedOptions).map(o => o.value);
+      if (!siteType) return alert("Select a site type!");
+      if (sections.length === 0) return alert("Choose at least one section!");
+
+      const siteName = siteType.charAt(0).toUpperCase() + siteType.slice(1);
+      let content = `<header><h1>Welcome to ${siteName}</h1><p>Your awesome ${siteType} site, freshly generated 🎉</p></header>`;
+
+      if (sections.includes("features")) {
+        content += `
+          <section class="site-section">
+            <h2 class="section-title">✨ Features</h2>
+            <div class="features-grid">
+              <div class="card"><h3>🚀 Fast & Modern</h3><p>Built with the latest technologies.</p></div>
+              <div class="card"><h3>📱 Responsive</h3><p>Looks great on all devices.</p></div>
+              <div class="card"><h3>🎨 Beautiful UI</h3><p>Clean, modern, engaging design.</p></div>
+            </div>
+          </section>`;
+      }
+
+      if (sections.includes("blog")) {
+        content += `
+          <section class="site-section">
+            <h2 class="section-title">📝 Blog</h2>
+            <div class="blog-list">
+              ${["Getting Started","Latest Updates","Tips & Tricks"].map(t=>`
+                <div class="card">
+                  <h3>${t}</h3>
+                  <p><small>${new Date().toLocaleDateString()}</small></p>
+                  <p>Sample blog post content.</p>
+                </div>`).join('')}
+            </div>
+          </section>`;
+      }
+
+      if (sections.includes("gallery")) {
+        content += `
+          <section class="site-section">
+            <h2 class="section-title">📸 Gallery</h2>
+            <div class="gallery-grid">
+              ${[1,2,3,4,5,6].map(i=>`<img src="https://picsum.photos/200/200?random=${i}" alt="Gallery ${i}">`).join('')}
+            </div>
+          </section>`;
+      }
+
+      if (sections.includes("store")) {
+        content += `
+          <section class="site-section">
+            <h2 class="section-title">🛍️ Store</h2>
+            <div class="store-items">
+              ${["Premium Product","Popular Item","Best Seller"].map((n,i)=>`
+                <div class="card">
+                  <h3>${n}</h3>
+                  <p><strong>$${(i+1)*49.99}</strong></p>
+                  <p>Product description.</p>
+                  <button class="btn btn-success">Add to Cart</button>
+                </div>`).join('')}
+            </div>
+          </section>`;
+      }
+
+      if (sections.includes("contact")) {
+        content += `
+          <section class="site-section">
+            <h2 class="section-title">📬 Contact</h2>
+            <form class="contact-form" onsubmit="event.preventDefault(); alert('Message sent!');">
+              <input type="text" placeholder="Your Name" required>
+              <input type="email" placeholder="Your Email" required>
+              <textarea placeholder="Your Message..." rows="5" required></textarea>
+              <button type="submit" class="btn btn-success">Send Message</button>
+            </form>
+          </section>`;
+      }
+
+      content += `<footer>&copy; ${new Date().getFullYear()} ${siteName} — All rights reserved.</footer>`;
+      document.getElementById("siteContent").innerHTML = content;
+      codeBox.textContent = content;
+      togglePanel(false);
+      updateButtons();
+    }
+
+    rebuildHistory();
+  </script>
+</body>
+</html>
