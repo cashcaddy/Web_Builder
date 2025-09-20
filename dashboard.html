@@ -3,66 +3,87 @@
 <head>
   <meta charset="UTF-8">
   <title>Analytics Dashboard</title>
+  
+</script>
+
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="tracking.js"></script>
   <style>
     body { font-family: Arial,sans-serif; padding:2rem; }
-    h1 { margin-bottom:2rem; }
     .grid { display:grid; grid-template-columns:1fr 1fr; gap:2rem; }
     .chart-container { background:#f8f8f8; padding:1rem; border-radius:8px; }
     button { margin-top:1rem; padding:0.5rem 1rem; }
   </style>
 </head>
 <body>
-  <h1>📊 Analytics Dashboard</h1>
+  <h1>📊 Mini Analytics Dashboard</h1>
   <div class="grid">
     <div class="chart-container"><canvas id="pageviewsChart"></canvas></div>
     <div class="chart-container"><canvas id="eventsChart"></canvas></div>
     <div class="chart-container"><canvas id="pagesChart"></canvas></div>
     <div class="chart-container"><canvas id="refChart"></canvas></div>
   </div>
-
   <button onclick="myAnalytics.clearData(); location.reload()">Clear Analytics</button>
 
+  <script src="tracking.js"></script>
+<script>
+  const PASSWORD_HASH = "Abdul Aliyy"; // hash of "mySecret123"
+
+  async function hash(str) {
+    const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
+    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+  }
+
+  (async () => {
+    if(sessionStorage.getItem("dashboardAuth") === "true") return; // already authorized
+
+    const userInput = prompt("Enter Dashboard Password:");
+    const userHash = await hash(userInput);
+    if(userHash !== PASSWORD_HASH){
+      document.body.innerHTML = "<h2>Access Denied ❌</h2>";
+      throw new Error("Unauthorized access");
+    }
+    sessionStorage.setItem("dashboardAuth", "true"); // session valid until browser closed
+  })();
+</script>
+
   <script>
-    // Demo central storage: merge data from all sites in localStorage
-    const raw = myAnalytics.getData(); // currently only local browser
+    const raw = myAnalytics.getData();
 
     // Pageviews per day
     const pageviewsByDay = {};
-    raw.filter(e => e.type==="pageview").forEach(e=>{
+    raw.filter(e => e.type === "pageview").forEach(e => {
       const d = new Date(e.ts).toISOString().slice(0,10);
       pageviewsByDay[d] = (pageviewsByDay[d]||0)+1;
     });
     new Chart(document.getElementById("pageviewsChart"), {
-      type:"line",
-      data:{ labels:Object.keys(pageviewsByDay), datasets:[{ label:"Pageviews", data:Object.values(pageviewsByDay), borderColor:"blue", fill:false }] }
+      type: "line",
+      data: { labels: Object.keys(pageviewsByDay), datasets:[{ label:"Pageviews", data:Object.values(pageviewsByDay), borderColor:"blue", fill:false }] }
     });
 
     // Events by name
     const eventsCount = {};
-    raw.filter(e=>e.type==="event").forEach(e=>{
-      eventsCount[e.name]=(eventsCount[e.name]||0)+1;
+    raw.filter(e => e.type === "event").forEach(e => {
+      eventsCount[e.name] = (eventsCount[e.name]||0)+1;
     });
     new Chart(document.getElementById("eventsChart"), {
-      type:"bar",
-      data:{ labels:Object.keys(eventsCount), datasets:[{ label:"Events", data:Object.values(eventsCount), backgroundColor:"orange" }] }
+      type: "bar",
+      data: { labels:Object.keys(eventsCount), datasets:[{ label:"Events", data:Object.values(eventsCount), backgroundColor:"orange" }] }
     });
 
-    // Top Pages
+    // Top pages
     const pagesCount = {};
-    raw.filter(e=>e.type==="pageview").forEach(e=>{
-      pagesCount[e.url]=(pagesCount[e.url]||0)+1;
+    raw.filter(e => e.type==="pageview").forEach(e => {
+      pagesCount[e.url] = (pagesCount[e.url]||0)+1;
     });
     new Chart(document.getElementById("pagesChart"), {
-      type:"bar",
-      data:{ labels:Object.keys(pagesCount), datasets:[{ label:"Pages Viewed", data:Object.values(pagesCount), backgroundColor:"green" }] }
+      type: "bar",
+      data: { labels:Object.keys(pagesCount), datasets:[{ label:"Pages Viewed", data:Object.values(pagesCount), backgroundColor:"green" }] }
     });
 
     // Referrers
     const refCount = {};
-    raw.filter(e=>e.type==="pageview").forEach(e=>{
-      refCount[e.ref]=(refCount[e.ref]||0)+1;
+    raw.filter(e => e.type==="pageview").forEach(e => {
+      refCount[e.ref] = (refCount[e.ref]||0)+1;
     });
     new Chart(document.getElementById("refChart"), {
       type:"doughnut",
