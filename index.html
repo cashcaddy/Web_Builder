@@ -3,7 +3,10 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Web-Builder</title>
-      <script src="tracking.js" async></script>  
+<script>
+    window.SITE_ID = "site1"; // unique ID for this site
+  </script>
+  <script src="tracking.js" async></script>  
   <link rel="icon" type="image/png" href="logo.png">
 <link href="data:image/x-icon;base64," rel="icon" type="image/x-icon"/>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
@@ -72,7 +75,7 @@
 <nav class="hidden items-center gap-8 md:flex">
 </nav>
 <div class="flex items-center gap-4">
-<button class="rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-transform hover:scale-105" onclick="location.href='web_builder.html'">
+<button class="rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-transform hover:scale-105" onclick="location.href='web_builder.html'" data-event="SubscribeClick" >
                 Start Building
               </button>
 </div>
