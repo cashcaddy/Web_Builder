@@ -1,104 +1,55 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <link rel="icon" type="image/png" href="logo.png">
-  <title>Web Builder</title>
-  <style>
-    /* Reset */
- /* Dark Theme Base */
-body, html {
-  font-family: 'Segoe UI', sans-serif;
-  background: #0f172a;
-  color: #f8fafc;
-}
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>⚡ Web Builder</title>
+<style>
+/* Reset & base */
+* { box-sizing: border-box; margin: 5px; padding: 0; margin-bottom: 20px; }
+body { font-family:'Segoe UI', sans-serif; background:#0f172a; color:#f8fafc; }
+header { background: #1e293b; padding: 1rem; text-align: center; border-radius: 0 0 12px 12px; }
+header h1 { color:#38bdf8; font-size:1.8rem; }
+header p { color:#cbd5e1; margin-top:0.5rem; }
 
-/* Navbar */
-nav {
-  background: #1e293b;
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 1rem 2rem;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.5);
-}
-.logo {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #38bdf8;
-  flex: 1;
-  cursor: pointer;
-  transition: color 0.2s;
-}
-.logo:hover { color: #0ea5e9; }
+.container { display:flex; flex-wrap:wrap; padding:1rem; gap:1rem; justify-content:center; }
+.sidebar { width:250px; background:#1e293b; padding:1rem; border-radius:8px; }
+.sidebar h2 { font-size:1.2rem; margin-bottom:0.5rem; color:#38bdf8; }
+.sidebar select, .sidebar button { width:100%; margin-bottom:0.5rem; padding:0.5rem; border-radius:4px; border:1; font-weight:600; background-color:#1e293b ; color: #fff; }
+.sidebar button { background:#38bdf8; color:#0f172a; cursor:pointer; }
+.preview { flex:1; background:#1e293b; padding:1rem; border-radius:8px; min-height:400px; }
+.controls { margin-top:1rem; display:flex; gap:.5rem; flex-wrap:wrap; justify-content:center; padding:0 1rem; }
+.btn { background:#38bdf8; color:#0f172a; padding:.5rem 1rem; border:none; border-radius:4px; cursor:pointer; font-weight:bold; transition:0.2s; }
+.btn:hover { background:#0ea5e9; }
+.btn-success { background:#16a34a; color:#fff; }
+.btn-danger { background:#ef4444; color:#fff; }
+.code-box { background:#0f172a; color:#38bdf8; padding:1rem; margin-top:1rem; border-radius:8px; display:none; white-space:pre-wrap; max-height:400px; overflow:auto; }
 
-/* Buttons */
-.btn {
-  background: #2563eb;
-  color: white;
-  border: none;
-  padding: 0.6rem 1rem;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: 600;
-  transition: background 0.3s, transform 0.2s;
-}
-.btn:hover { background: #1d4ed8; transform: translateY(-2px); }
-.btn-danger { background: #ef4444; }
-.btn-success { background: #2563eb; }
+.site-section { padding:2rem; margin-bottom:1rem; border-radius:8px; background:#334155; box-shadow:0 4px 10px rgba(0,0,0,0.2); }
+.section-title { font-size:1.5rem; margin-bottom:1rem; color:#38bdf8; text-align:center; }
+.features-grid, .gallery-grid, .store-items, .blog-list { display:flex; flex-wrap:wrap; justify-content:center; gap:20px; }
+.card { background:#1e293b; border-radius:12px; padding:20px; width:250px; box-shadow:0 4px 10px rgba(0,0,0,0.1); text-align:center; border:1px solid #e0e0e0; transition:0.3s; }
+.card:hover { transform:translateY(-5px); box-shadow:0 8px 20px rgba(0,0,0,0.15); }
+.gallery-grid img { width:200px; height:200px; object-fit:cover; border-radius:12px; transition:transform 0.3s ease; }
+.gallery-grid img:hover { transform:scale(1.05); }
+.contact-form { display:flex; flex-direction:column; gap:12px; max-width:500px; margin:auto; }
+.contact-form input, .contact-form textarea { padding:10px; border-radius:8px; border:1px solid #ccc; font-size:1rem; }
+footer { text-align:center; margin-top:40px; padding:20px; background-color:#1e293b; color:#94a3b8; border-radius:8px; }
 
-/* Input Panel */
-.input-panel { position: fixed; top: 5.5rem; left: 50%; transform: translateX(-50%); width: 320px; background: white; border: 1px solid #ddd; padding: 1rem; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); display: none; z-index: 999; } .input-panel h3 { margin-bottom: 0.5rem; } .input-panel label { display: block; margin: 0.5rem 0 0.2rem; font-weight: 600; } .input-panel select, .input-panel button { width: 100%; padding: 0.5rem; margin-bottom: 0.5rem; border-radius: 4px; border: 1px solid #ccc; }
-
-/* Generated Site */
-#siteContent { padding: 2rem; background: #1e293b; margin: 1rem auto; width: 90%; max-width: 1000px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); min-height: 400px; } .site-section { padding: 3rem 2rem; margin-bottom: 2rem; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);background: #1e293b;} .section-title { font-size: 2rem; margin-bottom: 1rem; color: #0078f0; text-align: center; } .features-grid, .gallery-grid, .store-items, .blog-list { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; padding: 20px 0; } .card {background: #1e293b; border-radius: 12px; padding: 20px; width: 250px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; text-align: center; border: 1px solid #e0e0e0; } .card:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); } .gallery-grid img { width: 200px; height: 200px; object-fit: cover; border-radius: 12px; transition: transform 0.3s ease; } .gallery-grid img:hover { transform: scale(1.05); } .contact-form { max-width: 500px; margin: auto; display: flex; flex-direction: column; gap: 12px; } .contact-form input, .contact-form textarea { padding: 10px; border-radius: 8px; border: 1px solid #ccc; font-size: 1rem; }
-/* Code Box */
-
-
-/* Footer */
-footer {
-  text-align: center;
-  margin-top: 40px;
-  padding: 20px;
-  background-color: #1e293b;
-  color: #94a3b8;
-  border-radius: 8px;
-}
-
-
-    /* Code block */
-    .dropdown-code {
-      display: none;
-      background: #2e3440;
-      color: #d8dee9;
-      padding: 1rem;
-      font-family: monospace;
-      white-space: pre-wrap;
-      overflow-y: auto;
-      max-height: 400px;
-      margin: 1rem 2rem 2rem;
-      border-radius: 8px;
-    }
-
-    /* Responsive */
-    @media (max-width: 768px) {
-      nav { flex-direction: column; align-items: flex-start; }
-      .input-panel { width: 90%; left: 5%; transform: none; }
-    }
-  </style>
+@media(max-width:768px){ .container{flex-direction:column;} .sidebar{width:100%;} }
+</style>
 </head>
 <body>
-  <nav>
-    <div class="logo" onclick="window.scrollTo({ top: 0, behavior: 'smooth' })">WebBuilder</div>
-    <button class="btn" onclick="togglePanel(true)">Options 🔽</button>
-    <button class="btn" onclick="toggleCode()">Get Code 💻</button>
-  </nav>
+<a href="dashboard.html" style="color:#0f172a ;">hello</a>
+<header>
+  <h1>⚡ Web Builder</h1>
+  <p>Generate and edit stylish websites instantly</p>
+</header>
 
-  <div class="input-panel" id="inputPanel">
-    <button class="btn btn-danger" onclick="togglePanel(false)">Close ❌</button>
-    <h3 style="color: black;" >Select Options</h3>
-    <label style="color: black;" >Site Type:</label>
+<div class="container">
+  <aside class="sidebar">
+    <h2>Site Options</h2>
+    <label>Site Type:</label>
     <select id="siteType">
       <option value="">-- Choose Type --</option>
       <option value="portfolio">Portfolio</option>
@@ -107,120 +58,153 @@ footer {
       <option value="store">Online Store</option>
       <option value="personal">Personal Site</option>
     </select>
-    <label style="color: black;" >Sections:  (Press CTRL to select Multiple Section)</label>
-    <select id="siteSections" multiple size="5">
+
+    <label>Sections: (CTRL+Click for multiple)</label>
+    <select id="siteSections" multiple size="7">
+      <option value="hero">Hero</option>
+      <option value="about">About</option>
       <option value="features">Features</option>
       <option value="blog">Blog</option>
       <option value="gallery">Gallery</option>
       <option value="store">Store</option>
       <option value="contact">Contact</option>
     </select>
-    <button class="btn btn-success" onclick="generateSite()">Generate Site 🚀</button>
-  </div>
 
-  <main id="siteContent">
-    <p style="padding:2rem;">Your stylish site will appear here!</p>
+    <button class="btn btn-success" onclick="generateSite()">🚀 Generate Site</button>
+    <button class="btn btn-danger" onclick="clearSite()">🗑️ Clear Site</button>
+  </aside>
+
+  <main class="preview" id="siteContent">
+    <p>🚀 Your stylish site will appear here...</p>
   </main>
+</div>
 
-  <div class="dropdown-code" id="codeBox"></div>
+<div class="controls">
+  <button class="btn" onclick="toggleEditing()">✏️ Edit Mode</button>
+  <button class="btn" onclick="toggleCode()">💻 Get Code</button>
+  <button class="btn" onclick="toggleCodeEdit()">📝 Edit Code</button>
+  <button class="btn" onclick="applyEditedCode()" id="applyBtn" style="display:none;">✅ Apply Changes</button>
+  <button class="btn" onclick="downloadCode()">⬇️ Download</button>
+</div>
 
-  <script>
-    const inputPanel = document.getElementById("inputPanel");
-    const codeBox = document.getElementById("codeBox");
-   
+<pre class="code-box" id="codeBox"></pre>
 
-    function togglePanel(open) { inputPanel.style.display = open ? 'block' : 'none'; }
-    function toggleCode() { codeBox.style.display = codeBox.style.display === 'block' ? 'none' : 'block'; }
-   
-    
+<script>
+const siteContent = document.getElementById("siteContent");
+const codeBox = document.getElementById("codeBox");
+let editMode = false;
+let codeEditMode = false;
 
-    
+// Function to indent/pretty-print HTML
+function formatHTML(html) {
+  let tab = 0;
+  return html.replace(/(>)(<)(\/*)/g, "$1\r\n$2$3").split("\r\n").map(line => {
+    let indent = 0;
+    if(line.match(/.+<\/\w[^>]*>$/)) indent = tab;
+    else if(line.match(/^<\/\w/)) tab = tab > 0 ? tab-1 : 0;
+    else if(line.match(/^<\w[^>]*[^\/]>.*$/)) indent = tab++;
 
-    function generateSite() {
-      const siteType = document.getElementById("siteType").value;
-      const sections = Array.from(document.getElementById("siteSections").selectedOptions).map(o => o.value);
-      if (!siteType) return alert("Select a site type!");
-      if (sections.length === 0) return alert("Choose at least one section!");
+    return '  '.repeat(indent) + line.trim();
+  }).join("\r\n");
+}
 
-      const siteName = siteType.charAt(0).toUpperCase() + siteType.slice(1);
-      let content = `<header><h1>Welcome to ${siteName}</h1><p>Your awesome ${siteType} site, freshly generated 🎉</p></header>`;
+function toggleEditing() {
+  editMode = !editMode;
+  if(editMode){
+    siteContent.querySelectorAll("h1,h2,h3,p,small,label,button").forEach(el=>{
+      el.setAttribute("contenteditable","true");
+      el.style.outline="1px dashed #38bdf8";
+      el.style.cursor="text";
+    });
+  } else {
+    siteContent.querySelectorAll("[contenteditable='true']").forEach(el=>{
+      el.removeAttribute("contenteditable");
+      el.style.outline="none";
+      el.style.cursor="default";
+    });
+  }
+}
 
-      if (sections.includes("features")) {
-        content += `
-          <section class="site-section">
-            <h2 class="section-title">✨ Features</h2>
-            <div class="features-grid">
-              <div class="card"><h3>🚀 Fast & Modern</h3><p>Built with the latest technologies.</p></div>
-              <div class="card"><h3>📱 Responsive</h3><p>Looks great on all devices.</p></div>
-              <div class="card"><h3>🎨 Beautiful UI</h3><p>Clean, modern, engaging design.</p></div>
-            </div>
-          </section>`;
-      }
+function toggleCode(){
+  codeBox.textContent = formatHTML(siteContent.innerHTML);
+  codeBox.style.display = codeBox.style.display==='block'?'none':'block';
+}
 
-      if (sections.includes("blog")) {
-        content += `
-          <section class="site-section">
-            <h2 class="section-title">📝 Blog</h2>
-            <div class="blog-list">
-              ${["Getting Started","Latest Updates","Tips & Tricks"].map(t=>`
-                <div class="card">
-                  <h3>${t}</h3>
-                  <p><small>${new Date().toLocaleDateString()}</small></p>
-                  <p>Sample blog post content.</p>
-                </div>`).join('')}
-            </div>
-          </section>`;
-      }
+function toggleCodeEdit(){
+  const applyBtn=document.getElementById("applyBtn");
+  if(!codeEditMode){
+    codeEditMode=true;
+    codeBox.style.display="block";
+    codeBox.setAttribute("contenteditable","true");
+    codeBox.style.border="1px solid #38bdf8";
+    applyBtn.style.display="inline-block";
+  } else {
+    codeEditMode=false;
+    codeBox.setAttribute("contenteditable","false");
+    codeBox.style.border="none";
+    applyBtn.style.display="none";
+  }
+}
 
-      if (sections.includes("gallery")) {
-        content += `
-          <section class="site-section">
-            <h2 class="section-title">📸 Gallery</h2>
-            <div class="gallery-grid">
-              ${[1,2,3,4,5,6].map(i=>`<img src="https://picsum.photos/200/200?random=${i}" alt="Gallery ${i}">`).join('')}
-            </div>
-          </section>`;
-      }
+function applyEditedCode(){
+  siteContent.innerHTML=codeBox.textContent;
+  alert("✅ Changes applied to preview!");
+}
 
-      if (sections.includes("store")) {
-        content += `
-          <section class="site-section">
-            <h2 class="section-title">🛍️ Store</h2>
-            <div class="store-items">
-              ${["Premium Product","Popular Item","Best Seller"].map((n,i)=>`
-                <div class="card">
-                  <h3>${n}</h3>
-                  <p><strong>$${(i+1)*49.99}</strong></p>
-                  <p>Product description.</p>
-                  <button class="btn btn-success">Add to Cart</button>
-                </div>`).join('')}
-            </div>
-          </section>`;
-      }
+function downloadCode(){
+  const blob=new Blob([siteContent.innerHTML],{type:"text/html"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="website.html";
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
 
-      if (sections.includes("contact")) {
-        content += `
-          <section class="site-section">
-            <h2 class="section-title">📬 Contact</h2>
-            <form class="contact-form" onsubmit="event.preventDefault(); alert('Message sent!');">
-              <input type="text" placeholder="Your Name" required>
-              <input type="email" placeholder="Your Email" required>
-              <textarea placeholder="Your Message..." rows="5" required></textarea>
-              <button type="submit" class="btn btn-success">Send Message</button>
-            </form>
-          </section>`;
-      }
+function clearSite(){ 
+  siteContent.innerHTML='<p>🚀 Your stylish site will appear here...</p>'; 
+  codeBox.textContent=''; 
+}
 
-      content += `<footer>&copy; ${new Date().getFullYear()} ${siteName} — All rights reserved.</footer>`;
-      document.getElementById("siteContent").innerHTML = content;
-      codeBox.textContent = content;
-      togglePanel(false);
-      updateButtons();
-    }
+function generateSite(){
+  const siteType=document.getElementById("siteType").value;
+  const sections=Array.from(document.getElementById("siteSections").selectedOptions).map(o=>o.value);
+  if(!siteType) return alert("Select a site type!");
+  if(sections.length===0) return alert("Choose at least one section!");
 
-    rebuildHistory();
-  </script>
+  const siteName=siteType.charAt(0).toUpperCase()+siteType.slice(1);
+  let content=`<header><h1>Welcome to ${siteName}</h1><p>Your awesome ${siteType} site, freshly generated 🎉</p></header>`;
+
+  if(sections.includes("hero")){
+    content+=`<section class="site-section"><h2 class="section-title">🏠 Hero Section</h2><p>Introduce your website with style!</p></section>`;
+  }
+  if(sections.includes("about")){
+    content+=`<section class="site-section"><h2 class="section-title">ℹ️ About</h2><p>Tell visitors about yourself or business.</p></section>`;
+  }
+  if(sections.includes("features")){
+    content+=`<section class="site-section"><h2 class="section-title">✨ Features</h2><div class="features-grid"><div class="card"><h3>🚀 Fast & Modern</h3><p>Built with the latest technologies.</p></div><div class="card"><h3>📱 Responsive</h3><p>Looks great on all devices.</p></div><div class="card"><h3>🎨 Beautiful UI</h3><p>Clean, modern, engaging design.</p></div></div></section>`;
+  }
+  if(sections.includes("blog")){
+    content+=`<section class="site-section"><h2 class="section-title">📝 Blog</h2><div class="blog-list">${["Getting Started","Latest Updates","Tips & Tricks"].map(t=>`<div class="card"><h3>${t}</h3><p><small>${new Date().toLocaleDateString()}</small></p><p>Sample blog post content.</p></div>`).join('')}</div></section>`;
+  }
+  if(sections.includes("gallery")){
+    content+=`<section class="site-section"><h2 class="section-title">📸 Gallery</h2><div class="gallery-grid">${[1,2,3,4,5,6].map(i=>`<img src="https://picsum.photos/200/200?random=${i}" alt="Gallery ${i}">`).join('')}</div></section>`;
+  }
+  if(sections.includes("store")){
+    content+=`<section class="site-section"><h2 class="section-title">🛍️ Store</h2><div class="store-items">${["Premium Product","Popular Item","Best Seller"].map((n,i)=>`<div class="card"><h3>${n}</h3><p><strong>$${(i+1)*49.99}</strong></p><p>Product description.</p><button class="btn btn-success">Add to Cart</button></div>`).join('')}</div></section>`;
+  }
+  if(sections.includes("contact")){
+    content+=`<section class="site-section"><h2 class="section-title">📬 Contact</h2><form class="contact-form" onsubmit="event.preventDefault(); alert('Message sent!');"><input type="text" placeholder="Your Name" required><input type="email" placeholder="Your Email" required><textarea placeholder="Your Message..." rows="5" required></textarea><button type="submit" class="btn btn-success">Send Message</button></form></section>`;
+  }
+
+  content+=`<footer>&copy; ${new Date().getFullYear()} ${siteName} — All rights reserved.</footer>`;
+
+  // Apply formatted content
+  siteContent.innerHTML = content;
+  codeBox.textContent = formatHTML(content);
+  if(editMode) toggleEditing();
+}
+</script>
+
+
 </body>
 </html>
-
-
