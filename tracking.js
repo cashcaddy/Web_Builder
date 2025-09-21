@@ -17,10 +17,10 @@
     });
   }
 
-  // Track automatically on load
+  // Auto-track pageviews on load
   window.addEventListener("load", trackPageview);
 
-  // Expose API for custom events
+  // Expose global API
   window.myAnalytics = {
     track: function(name) {
       saveEvent({
