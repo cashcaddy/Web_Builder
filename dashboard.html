@@ -3,82 +3,144 @@
 <head>
   <meta charset="UTF-8">
   <title>Analytics Dashboard</title>
-  
-</script>
-<script src="tracking.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    body { font-family: Arial,sans-serif; padding:2rem; }
-    .grid { display:grid; grid-template-columns:1fr 1fr; gap:2rem; }
-    .chart-container { background:#f8f8f8; padding:1rem; border-radius:8px; }
-    button { margin-top:1rem; padding:0.5rem 1rem; }
+    body {
+      font-family: Arial, sans-serif;
+      background: #f9fafb;
+      margin: 0;
+      padding: 20px;
+      color: #111;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .stats {
+      display: flex;
+      justify-content: space-around;
+      margin-bottom: 30px;
+    }
+    .card {
+      background: #fff;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      flex: 1;
+      margin: 0 10px;
+      text-align: center;
+    }
+    .card h2 {
+      margin: 0;
+      font-size: 2rem;
+      color: #2563eb;
+    }
+    .card p {
+      margin: 5px 0 0;
+      color: #555;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    table th, table td {
+      border-bottom: 1px solid #ddd;
+      padding: 10px;
+      text-align: left;
+    }
+    table th {
+      background: #f3f4f6;
+    }
+    .btn {
+      margin-top: 20px;
+      display: inline-block;
+      padding: 10px 15px;
+      background: #ef4444;
+      color: #fff;
+      border-radius: 6px;
+      text-decoration: none;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
-  <h1>📊 Mini Analytics Dashboard</h1>
-  <div class="grid">
-    <div class="chart-container"><canvas id="pageviewsChart"></canvas></div>
-    <div class="chart-container"><canvas id="eventsChart"></canvas></div>
-    <div class="chart-container"><canvas id="pagesChart"></canvas></div>
-    <div class="chart-container"><canvas id="refChart"></canvas></div>
-  </div>
-  <button onclick="myAnalytics.clearData(); location.reload()">Clear Analytics</button>
-
-  <script src="tracking.js"></script>
-<script>
-  const PASSWORD = "mySecret123"; // change this to your own secret
+  <script>
+    // 🔒 Simple password protection
+   const PASSWORD = "mySecret123"; // change this to your own secret
 
   const userInput = prompt("Enter Dashboard Password:");
   if(userInput !== PASSWORD){
     document.body.innerHTML = "<h2>Access Denied ❌</h2>";
     throw new Error("Unauthorized access");
   }
-</script>
+  </script>
 
+  <h1>📊 My Analytics Dashboard</h1>
 
+  <div class="stats">
+    <div class="card">
+      <h2 id="totalViews">0</h2>
+      <p>Total Views</p>
+    </div>
+    <div class="card">
+      <h2 id="uniqueVisitors">0</h2>
+      <p>Unique Visitors</p>
+    </div>
+    <div class="card">
+      <h2 id="eventsCount">0</h2>
+      <p>Custom Events</p>
+    </div>
+  </div>
+
+  <h2>Recent Activity</h2>
+  <table id="activityTable">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>URL</th>
+        <th>Referrer</th>
+        <th>Time</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <button class="btn" onclick="clearAnalytics()">Clear Analytics</button>
+
+  <script src="tracking.js"></script>
   <script>
-     const raw = myAnalytics.getData();
+    function renderDashboard() {
+      const data = myAnalytics.getData();
 
-    // Pageviews per day
-    const pageviewsByDay = {};
-    raw.filter(e => e.type === "pageview").forEach(e => {
-      const d = new Date(e.ts).toISOString().slice(0,10);
-      pageviewsByDay[d] = (pageviewsByDay[d]||0)+1;
-    });
-    new Chart(document.getElementById("pageviewsChart"), {
-      type: "line",
-      data: { labels: Object.keys(pageviewsByDay), datasets:[{ label:"Pageviews", data:Object.values(pageviewsByDay), borderColor:"blue", fill:false }] }
-    });
+      document.getElementById("totalViews").textContent = 
+        data.filter(e => e.type === "pageview").length;
 
-    // Events by name
-    const eventsCount = {};
-    raw.filter(e => e.type === "event").forEach(e => {
-      eventsCount[e.name] = (eventsCount[e.name]||0)+1;
-    });
-    new Chart(document.getElementById("eventsChart"), {
-      type: "bar",
-      data: { labels:Object.keys(eventsCount), datasets:[{ label:"Events", data:Object.values(eventsCount), backgroundColor:"orange" }] }
-    });
+      const unique = new Set(data.map(e => e.ref + e.url));
+      document.getElementById("uniqueVisitors").textContent = unique.size;
 
-    // Top pages
-    const pagesCount = {};
-    raw.filter(e => e.type==="pageview").forEach(e => {
-      pagesCount[e.url] = (pagesCount[e.url]||0)+1;
-    });
-    new Chart(document.getElementById("pagesChart"), {
-      type: "bar",
-      data: { labels:Object.keys(pagesCount), datasets:[{ label:"Pages Viewed", data:Object.values(pagesCount), backgroundColor:"green" }] }
-    });
+      document.getElementById("eventsCount").textContent = 
+        data.filter(e => e.type === "event").length;
 
-    // Referrers
-    const refCount = {};
-    raw.filter(e => e.type==="pageview").forEach(e => {
-      refCount[e.ref] = (refCount[e.ref]||0)+1;
-    });
-    new Chart(document.getElementById("refChart"), {
-      type:"doughnut",
-      data:{ labels:Object.keys(refCount), datasets:[{ label:"Referrers", data:Object.values(refCount), backgroundColor:["red","blue","purple","gray","orange"] }] }
-    });
+      const tbody = document.querySelector("#activityTable tbody");
+      tbody.innerHTML = "";
+      data.slice(-10).reverse().forEach(e => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${e.type}</td>
+          <td>${e.url}</td>
+          <td>${e.ref}</td>
+          <td>${new Date(e.ts).toLocaleString()}</td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    function clearAnalytics() {
+      myAnalytics.clearData();
+      renderDashboard();
+    }
+
+    renderDashboard();
   </script>
 </body>
 </html>
