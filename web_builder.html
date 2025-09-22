@@ -40,7 +40,7 @@ footer { text-align:center; margin-top:40px; padding:20px; background-color:#1e2
 </style>
 </head>
 <body>
-<a href="dashboard.html" style="color:#0f172a ;">hello</a>
+
 <header>
   <h1>⚡ Web Builder</h1>
   <p>Generate and edit stylish websites instantly</p>
@@ -204,7 +204,59 @@ function generateSite(){
   if(editMode) toggleEditing();
 }
 </script>
+<script>
+(function() {
+  const SITE_ID = "mysite"; // change per site
+  const STORAGE_KEY = `analytics_${SITE_ID}`;
 
+  function saveEvent(event) {
+    const data = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+    data.push(event);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  }
+
+  // Track pageview with location
+  fetch("https://ipapi.co/json/")
+    .then(res => res.json())
+    .then(loc => {
+      saveEvent({
+        type: "pageview",
+        url: location.pathname,
+        ref: document.referrer || "Direct",
+        ts: Date.now(),
+        location: `${loc.city || '-'}, ${loc.region || '-'}, ${loc.country_name || '-'}`
+      });
+    })
+    .catch(() => {
+      saveEvent({
+        type: "pageview",
+        url: location.pathname,
+        ref: document.referrer || "Direct",
+        ts: Date.now(),
+        location: "Unknown"
+      });
+    });
+
+  // Expose API for custom events
+  window.myAnalytics = {
+    track: function(name) {
+      saveEvent({
+        type: "event",
+        name,
+        url: location.pathname,
+        ts: Date.now()
+      });
+    },
+    getData: function() {
+      return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+    },
+    clearData: function() {
+      localStorage.removeItem(STORAGE_KEY);
+    }
+  };
+})();
+</script>
 
 </body>
 </html>
+
