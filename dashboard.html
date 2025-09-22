@@ -4,102 +4,139 @@
   <meta charset="UTF-8">
   <title>Analytics Dashboard</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
-
-    body { font-family: 'Inter', sans-serif; background: #f3f4f6; margin:0; padding:20px; color:#111; }
-    h1 { text-align:center; margin-bottom:40px; color:#111827; }
-
-    .stats { display:flex; flex-wrap:wrap; justify-content:center; gap:20px; margin-bottom:50px; }
-    .card { background:#fff; border-radius:16px; width:220px; padding:25px 20px; text-align:center; box-shadow:0 10px 20px rgba(0,0,0,0.08); transition: transform 0.3s, box-shadow 0.3s; }
-    .card:hover { transform:translateY(-6px); box-shadow:0 14px 28px rgba(0,0,0,0.12); }
-    .card .icon { font-size:36px; margin-bottom:12px; display:inline-block; padding:12px; border-radius:50%; background:#e0f2fe; color:#0284c7; }
-    .card h2 { margin:0; font-size:2.2rem; color:#2563eb; }
-    .card p { margin-top:8px; font-size:0.95rem; color:#6b7280; }
-
-    table { width:100%; border-collapse:collapse; background:#fff; border-radius:10px; overflow:hidden; box-shadow:0 8px 24px rgba(0,0,0,0.06); }
-    th, td { padding:14px 16px; text-align:left; }
-    th { background:#2563eb; color:#fff; font-weight:600; }
-    tr:nth-child(even){ background:#f9fafb; }
-    tr:hover { background:#dbeafe; }
-
-    .btn { margin-top:25px; padding:12px 24px; background:#ef4444; color:#fff; border:none; border-radius:10px; cursor:pointer; font-size:1rem; transition: background 0.3s; }
-    .btn:hover { background:#dc2626; }
-
-    @media (max-width:700px){ .stats { flex-direction:column; align-items:center; } .card{ width:80%; } }
+    body {
+      font-family: Arial, sans-serif;
+      background: #f9fafb;
+      margin: 0;
+      padding: 20px;
+      color: #111;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .stats {
+      display: flex;
+      justify-content: space-around;
+      margin-bottom: 30px;
+    }
+    .card {
+      background: #fff;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      flex: 1;
+      margin: 0 10px;
+      text-align: center;
+    }
+    .card h2 {
+      margin: 0;
+      font-size: 2rem;
+      color: #2563eb;
+    }
+    .card p {
+      margin: 5px 0 0;
+      color: #555;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    table th, table td {
+      border-bottom: 1px solid #ddd;
+      padding: 10px;
+      text-align: left;
+    }
+    table th {
+      background: #f3f4f6;
+    }
+    .btn {
+      margin-top: 20px;
+      display: inline-block;
+      padding: 10px 15px;
+      background: #ef4444;
+      color: #fff;
+      border-radius: 6px;
+      text-decoration: none;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
-  <h1>📊 Analytics Dashboard</h1>
+  <script>
+    // 🔒 Simple password protection
+   const PASSWORD = "mySecret123"; // change this to your own secret
+
+  const userInput = prompt("Enter Dashboard Password:");
+  if(userInput !== PASSWORD){
+    document.body.innerHTML = "<h2>Access Denied ❌</h2>";
+    throw new Error("Unauthorized access");
+  }
+  </script>
+
+  <h1>📊 My Analytics Dashboard</h1>
 
   <div class="stats">
     <div class="card">
-      <div class="icon">👁️</div>
       <h2 id="totalViews">0</h2>
       <p>Total Views</p>
     </div>
     <div class="card">
-      <div class="icon">🧑‍🤝‍🧑</div>
       <h2 id="uniqueVisitors">0</h2>
       <p>Unique Visitors</p>
     </div>
     <div class="card">
-      <div class="icon">⚡</div>
       <h2 id="eventsCount">0</h2>
       <p>Custom Events</p>
     </div>
   </div>
 
   <h2>Recent Activity</h2>
-  <table>
+  <table id="activityTable">
     <thead>
       <tr>
         <th>Type</th>
         <th>URL</th>
         <th>Referrer</th>
-        <th>Location</th>
         <th>Time</th>
       </tr>
     </thead>
-    <tbody id="activityBody"></tbody>
+    <tbody></tbody>
   </table>
 
   <button class="btn" onclick="clearAnalytics()">Clear Analytics</button>
 
+  <script src="tracking.js"></script>
   <script>
-    const SITE_ID = "mysite1"; // must match the website snippet
-    const STORAGE_KEY = `analytics_${SITE_ID}`;
-
-    function getData() {
-      return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-    }
-
     function renderDashboard() {
-      const data = getData();
+      const data = myAnalytics.getData();
 
-      document.getElementById("totalViews").textContent = data.filter(e => e.type === "pageview").length;
+      document.getElementById("totalViews").textContent = 
+        data.filter(e => e.type === "pageview").length;
 
       const unique = new Set(data.map(e => e.ref + e.url));
       document.getElementById("uniqueVisitors").textContent = unique.size;
 
-      document.getElementById("eventsCount").textContent = data.filter(e => e.type === "event").length;
+      document.getElementById("eventsCount").textContent = 
+        data.filter(e => e.type === "event").length;
 
-      const tbody = document.getElementById("activityBody");
+      const tbody = document.querySelector("#activityTable tbody");
       tbody.innerHTML = "";
       data.slice(-10).reverse().forEach(e => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
+        const row = document.createElement("tr");
+        row.innerHTML = `
           <td>${e.type}</td>
-          <td>${e.url || "-"}</td>
-          <td>${e.ref || "-"}</td>
-          <td>${e.location || "-"}</td>
+          <td>${e.url}</td>
+          <td>${e.ref}</td>
           <td>${new Date(e.ts).toLocaleString()}</td>
         `;
-        tbody.appendChild(tr);
+        tbody.appendChild(row);
       });
     }
 
     function clearAnalytics() {
-      localStorage.removeItem(STORAGE_KEY);
+      myAnalytics.clearData();
       renderDashboard();
     }
 
